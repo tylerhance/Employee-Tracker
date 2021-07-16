@@ -3,6 +3,7 @@ const inquirer = require("inquirer");
 const cTable = require("console.table");
 const chalk = require("chalk");
 const figlet = require("figlet");
+const { connect } = require("http2");
 // const validate = require("./js/validate");
 
 // DB connection and main title
@@ -140,8 +141,46 @@ const viewAllDepartments = () => {
     console.log(chalk.blueBright.bold(`======================================================`));
     console.log(`                        ` + chalk.green.bold(`All Departments: `));
     console.log(chalk.blueBright.bold(`======================================================`));
-    console.log(console.table);
+    console.table(response);
     console.log(chalk.blueBright.bold(`======================================================`));
     promptUser();
     });
 };
+
+// View all employees by department
+const viewEmployeesByDepartment = () => {
+    const sql = `SELECT employee.first_name,
+                 employee.last_name,
+                 department.department_name AS department
+                 FROM employee
+                 LEFT JOIN role ON employee.role_id = role.id
+                 LEFT JOIN department ON role.department_id = department.id`;
+    connection.query(sql, (error, response) => {
+        if(error) throw error;
+        console.log(chalk.blueBright.bold(`======================================================`));
+        console.log(`                        ` + chalk.green.bold(`Employees by Department: `));
+        console.log(chalk.blueBright.bold(`======================================================`));
+        console.table(response);
+        console.log(chalk.blueBright.bold(`======================================================`));
+        promptUser();
+    });
+};
+
+// View all departments by budget
+const viewDepartmentBudget = () => {
+    console.log(chalk.blueBright.bold(`======================================================`));
+    console.log(`                        ` + chalk.green.bold(`Budget by Department: `));
+    console.log(chalk.blueBright.bold(`======================================================`));
+    const sql = `SELECT department_id AS id,
+                 department.department_name AS department,
+                 SUM(salary) AS budget
+                 FROM role
+                 INNER JOIN department ON role.department_id = department.id GROUP BY role.department_id`;
+    connection.query(sql, (error, response) => {
+        if(error) throw error;
+        console.table(response);
+        console.log(chalk.blueBright.bold(`======================================================`));
+        promptUser();
+    });
+};
+
