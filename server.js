@@ -245,3 +245,65 @@ const addEmployee = () => {
 };
 
 // Add a new role
+const addRole = () => {
+    const sql = 'SELECT * FROM department'
+    connection.promise().query(sql, (error, response) => {
+        if(error) throw error;
+        let deptNamesArr = [];
+        response.forEach((department) => {deptNamesArr.push(department.department_name);
+        });
+        deptNamesArr.push("Create Department");
+    });
+    inquirer.prompt([
+        {
+            name: "departmentName",
+            type: "list",
+            message: "Which department does this new role belong to?",
+            choices: deptNamesArr
+        }
+    ])
+    .then((answer) => {
+        if(answer.departmentName === "Create Department"){
+            this.addDepartment();
+        }else{
+            addRoleContinue(answer);
+        }
+    });
+
+    const addRoleContinue = (departmentData) => {
+        inquirer.prompt([
+            {
+                name: "role",
+                type: "input",
+                message: "What is the name of the new role?",
+            },
+            {
+                name: "salary",
+                type: "input",
+                message: "What's the salary for the new role?"
+            }
+        ])
+        .then((answer) => {
+            let createdRole = answer.newRole;
+            let departmentId;
+
+            response.forEach((department) => {
+                if(departmentData.departmentName === department.department_name) {
+                    departmentId = department.id;
+                }
+            });
+            let sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+            let newEmployee = [createdRole, answer.salary, departmentId];
+
+            connection.promise().query(sql, newEmployee, (error) => {
+                if(error) throw error;
+                console.log(chalk.blueBright.bold(`======================================================`));
+                console.log(`                        ` + chalk.green.bold(`New Role Successfully Created!`));
+                console.log(chalk.blueBright.bold(`======================================================`));
+                viewAllRoles();
+            });
+        });
+    };
+};
+
+// 
