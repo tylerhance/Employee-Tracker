@@ -8,13 +8,13 @@ const figlet = require("figlet");
 // DB connection and main title
 connection.connect((error) => {
     if(error) throw error;
-    console.log(chalk.yellow.bold(`==============================================================`));
+    console.log(chalk.blueBright.bold(`==============================================================`));
     console.log(``);
     console.log(chalk.greenBright.bold(figlet.textSync("Employee Tracker")));
     console.log(``);
     console.log(`                                                   ` + chalk.greenBright.bold("Created by: Tyler Hance"));
     console.log(``);
-    console.log(chalk.yellow.bold(`===============================================================`));
+    console.log(chalk.blueBright.bold(`===============================================================`));
     promptUser();
 });
 
@@ -90,3 +90,27 @@ const promptUser = () => {
         }
     });
 };
+
+// View all employees
+const viewAllEmployees = () => {
+    let sql = `SELECT employee.id,
+                employee.first_name,
+                employee.last_name,
+                role.title
+                department.department_name AS "department",
+                role.salary
+                FROM employee, role, department
+                WHERE department.id = role.department_id
+                AND role_id = employee.role_id
+                ORDER BY employee.id ASC`;
+    connection.promise().query(sql, (error, response) => {
+        if(error) throw error;
+        console.log(chalk.blueBright.bold(`======================================================`));
+        console.log(`                        ` + chalk.green.bold(`Current Employees: `));
+        console.log(chalk.blueBright.bold(`======================================================`));
+        console.table(response);
+        console.log(chalk.blueBright.bold(`======================================================`));
+        promptUser();
+    });
+};
+
