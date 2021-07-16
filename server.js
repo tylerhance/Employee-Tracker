@@ -114,3 +114,34 @@ const viewAllEmployees = () => {
     });
 };
 
+// View all roles
+const viewAllRoles = () => {
+    console.log(chalk.blueBright.bold(`======================================================`));
+    console.log(`                        ` + chalk.green.bold(`Current Employee Roles: `));
+    console.log(chalk.blueBright.bold(`======================================================`));
+    const sql = `SELECT role.id, role.title, department.department_name AS department
+                    FROM role
+                    INNER JOIN department ON role.department_id = department.id`;
+    connection.promise().query(sql, (error, response) => {
+        if(error) throw error;
+        response.forEach((role) => {
+        console.log(role.title);
+        });
+        console.log(chalk.blueBright.bold(`======================================================`));
+        promptUser();
+    });
+};
+
+// View all departments
+const viewAllDepartments = () => {
+    const sql = `SELECT department.id AS id, department.department_name AS department FROM department`;
+    connection.promise().query(sql, (error, response) => {
+    if (error) throw error;
+    console.log(chalk.blueBright.bold(`======================================================`));
+    console.log(`                        ` + chalk.green.bold(`All Departments: `));
+    console.log(chalk.blueBright.bold(`======================================================`));
+    console.log(console.table);
+    console.log(chalk.blueBright.bold(`======================================================`));
+    promptUser();
+    });
+};
