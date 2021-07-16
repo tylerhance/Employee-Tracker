@@ -184,3 +184,64 @@ const viewDepartmentBudget = () => {
     });
 };
 
+// Add a new employee
+const addEmployee = () => {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "firstName",
+            message: " What's the employee's first name?",
+        },
+        {
+            type: "input",
+            name: "lastName",
+            message: "What's the employee's last name?",
+        },
+    ])
+    .then(answer => {
+        const newEmployee = [answer.firstName, answer.lastName]
+        const roleSql = `SELECT role.id, role.title FROM role`;
+        connection.promise().query(roleSql, (error, data) => {
+            if(error) throw error;
+            const roles = data.map(({ id, title}) => ({ name: title, value: id}));
+            inquirer.prompt([
+                {
+                    type: "list",
+                    name: "role",
+                    message: "What's the employee's role?",
+                    choices: roles
+                }
+            ])
+            .then(roleChoice => {
+                const role = roleChoice.role;
+                newEmployee.push(role);
+                const managerSql = `SELECT * FROM employee`;
+                connection.promise().query(managerSql, (error, data) => {
+                    if(error) throw error;
+                    const managers = data.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
+                    inquirer.prompt([
+                        {
+                            type: "list",
+                            name: "manager",
+                            message: "Who is the manager for this employee?",
+                            choices: managers
+                        }
+                    ])
+                    .then(managerChoice => {
+                        const manager = managerChoice.manager;
+                        newEmployee.push(manager);
+                        const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                                     VALUES (?, ?, ?, ?)`;
+                        connection.query(sql, newEmployee, (error) => {
+                            if(error) throw error;
+                            console.log("New employee has been added successfully!")
+                            viewAllEmployees();
+                        });
+                    });
+                });
+            });
+        });
+    });
+};
+
+// Add a new role
