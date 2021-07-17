@@ -1,9 +1,9 @@
 const connection = require("./config/connection");
 const inquirer = require("inquirer");
-const cTable = require("console.table");
+const consoleTable = require("console.table");
 const chalk = require("chalk");
 const figlet = require("figlet");
-const { connect } = require("http2");
+// const { connect } = require("http2");
 // const validate = require("./js/validate");
 
 // DB connection and main title
@@ -423,3 +423,115 @@ const updateEmployeeManager = () => {
 };
 
 // DELETE employee
+const removeEmployee = () => {
+    let sql = `SELECT employee.id, employee.first_name, employee.last_name FROM employee`;
+
+    connection.promise().query(sql, (error, response) => {
+        if(error) throw error;
+        let employeeNamesArr = [];
+        response.forEach((employee) => {employeeNamesArr.push(`${employee.first_name} ${employee.last_name}`);
+    });
+    inquirer.prompt([
+        {
+            name: "selectedEmployee",
+            type: "list",
+            message: "What employee would you like to remove?",
+            choices: employeeNamesArr
+        }
+    ])
+    .then((answer) => {
+        let employeeId;
+
+        response.forEach((employee) => {
+            if(answer.selectedEmployee === `${employee.first_name} ${employee.last_name}`){
+                employeeId = employee.id;
+            } 
+        });
+
+        let sql = `DELETE FROM employee WHERE employee.id = ?`;
+        connection.query(sql, [employeeId], (error) => {
+            if(error) throw error;
+            console.log(chalk.redBright.bold(`======================================================`));
+            console.log(`                    ` + chalk.redBright.bold(`Employee Successfully Removed`));
+            console.log(chalk.redBright.bold(`======================================================`));
+            viewAllEmployees();
+        });
+     });
+    });
+};
+
+// DELETE role
+const removeRole = () => {
+    let sql = `SELECT role.id, role.title FROM role`;
+
+    connection.promise().query(sql, (error, response) => {
+        if(error) throw error;
+        let roleNamesArray = [];
+        response.forEach((role) => {roleNamesArray.push(role.title);
+        });
+        
+        inquirer.prompt([
+            {
+                name: "selectedRole",
+                type: "list",
+                message: "What role do you wish to remove?",
+                choices: rolesArray
+            }
+        ])
+        .then((answer) => {
+            let roleId;
+
+            response.forEach((role) => {
+                if (answer.selectedRole === role.title) {
+                    roleId = role.id;
+                }
+            });
+
+            let sql = `DELETE FROM role WHERE role.id = ?`;
+            connection.promise().query(sql, [roleId], (error) => {
+                if(error) throw error;
+            console.log(chalk.redBright.bold(`======================================================`));
+            console.log(`                    ` + chalk.redBright.bold(`Role Successfully Removed`));
+            console.log(chalk.redBright.bold(`======================================================`));
+            viewAllRoles();
+            })
+        });
+    });
+};
+
+// DELETE department
+const removeDepartment = () => {
+    let sql = `SELECT department.id, department.department_name FROM department`;
+    connection.promise().query(sql, (error, response) => {
+        if(error) throw error;
+        let departmentNamesArray = [];
+        response.forEach((department) => {departmentNamesArray.push(department.department_name);
+        });
+
+        inquirer.prompt([
+            {
+                name: "selectedDept",
+                type: "What department do you wish to remove?",
+                choices: departmentNamesArray
+            }
+        ])
+        .then((answer) => {
+            let departmentId;
+
+            response.forEach((department) => {
+                if(answer.selectedDept === department.department_name){
+                    departmentId = department.id;
+                }
+            });
+
+            let sql = `DELETE FROM department WHERE department.id = ?`;
+            connection.promise().query(sql, [departmentId], (error) => {
+                if(error) throw error;
+            console.log(chalk.redBright.bold(`======================================================`));
+            console.log(`                    ` + chalk.redBright.bold(`Department Successfully Removed`));
+            console.log(chalk.redBright.bold(`======================================================`));
+            viewAllDepartments();
+            });
+        });
+    });
+};
