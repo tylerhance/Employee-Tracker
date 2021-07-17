@@ -3,7 +3,7 @@ const inquirer = require("inquirer");
 const consoleTable = require("console.table");
 const chalk = require("chalk");
 const figlet = require("figlet");
-// const { connect } = require("http2");
+const { connect } = require("http2");
 // const validate = require("./js/validate");
 
 // DB connection and main title

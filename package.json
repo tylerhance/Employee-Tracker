@@ -1,0 +1,28 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "Creating a content management system to allow management a solution to effectively manage employee's roles using Node, Inquirer, and MySQL.",
+  "main": "server.js",
+  "scripts": {
+    "test": "none",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tylerhance/Employee-Tracker.git"
+  },
+  "author": "tyler hance",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tylerhance/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/tylerhance/Employee-Tracker#readme",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "console-table": "^0.1.2",
+    "figlet": "^1.5.0",
+    "inquirer": "^8.1.2",
+    "mysql2": "^2.2.5",
+    "nodemon": "^2.0.12"
+  }
+}
