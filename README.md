@@ -20,7 +20,7 @@
   I WANT to be able to view and manage the departments, roles, and employees in my company
   SO THAT I can organize and plan my business
 
-* This application will allow users to:
+- This application will allow users to:
     <li>Add employees, roles, and departments</li>
     <li>View employees, roles, and departments</li>
     <li>View departments by budget and view employees by department</li>
@@ -85,8 +85,7 @@ npm start
 
 * Utilize the CLI interface to manage and maintain employees, roles, and departments.
 
-* A walk-through video demonstrating the apps functionality can be viewed [Here](https://drive.google.com/file/d/15EzGw7XT8Q5v4nO5FjTXcMAe3_USHiMX/view)<br>
-<img src="./assets/images/teamprofile.png">
+* A walk-through video demonstrating the apps functionality can be viewed [Here](https://drive.google.com/file/d/1s4M04WALA-40aTtKdi1ozL4Dhx8_v7mn/view)<br>
 
 <h2>Questions?</h2>
 
