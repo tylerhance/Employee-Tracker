@@ -3,8 +3,6 @@ const inquirer = require("inquirer");
 const consoleTable = require("console.table");
 const chalk = require("chalk");
 const figlet = require("figlet");
-const { connect } = require("http2");
-// const { connect } = require("http2");
 
 // DB connection and main title
 connection.connect((error) => {
@@ -322,63 +320,35 @@ const addRole = () => {
 
 // Update employee's role
 const updateEmployeeRole = () => {
-    let sql = "SELECT employee.id, employee.first_name, employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;"
-
-    connection.query(sql, (error, response) => {
-        if(error) throw error;
-        let employeeNamesArr = [];
-        let rolesArray = [];
-        response.forEach((employee) => {
-            employeeNamesArr.push(`${employee.first_name} ${employee.last_name}`);
+    inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Enter the employee's ID you want to be updated",
+        name: "updateEmployee"
+      },
+      {
+        type: "input",
+        message: "Enter the new role ID for that employee",
+        name: "newRole"
+      }
+    ])
+    .then((res) => {
+        const updateEmployee = res.updateEmployee;
+        const newRole = res.newRole;
+        const queryUpdate = `UPDATE employee SET role_id = "${newRole}" WHERE id = "${updateEmployee}"`;
+        connection.query(queryUpdate, function (error, res) {
+          if (error) {
+              throw error;
+          }
+          console.table(res);
+          console.log(chalk.blueBright.bold(`====================================================================================================`));
+          console.log(`                        ` + chalk.green.bold(`Employee Role Updated!`));
+          console.log(chalk.blueBright.bold(`====================================================================================================`));
+          promptUser();
         });
-
-        let sql = `SELECT role.id, role.title FROM role`;
-        connection.query(sql, (error, response) => {
-            if(error) throw error;
-            response.forEach((role) => {
-                rolesArray.push(role.title);
-            });                 
-        });
-        inquirer.prompt([
-            {
-                name: "selectedEmployee",
-                type: "list",
-                message: "What employee has a new role?",
-                choices: employeeNamesArr
-            },
-            {
-                name: "selectedRole",
-                type: "list",
-                message: "What is the employee's new role?",
-                choices: rolesArray
-            }
-        ])
-        .then((answer) => {
-            let newTitleId, employeeId;
-
-            response.forEach((role) => {
-                if(answer.selectedRole === role.title) {
-                    newTitleId = role.id;
-                }
-            });
-
-            response.forEach((employee) => {
-                if(answer.selectedEmployee === `${employee.first_name} ${employee.last_name}`){
-                    employeeId = employee.id;
-                }
-            });
-
-            let sql = `UPDATE employee SET employee.role_id = ? WHERE employee.id = ?`;
-            connection.query(sql , [newTitleId, employeeId], (error) => {
-                if(error) throw error;
-                console.log(chalk.blueBright.bold(`====================================================================================================`));
-                console.log(`                        ` + chalk.green.bold(`Employee Role Updated!`));
-                console.log(chalk.blueBright.bold(`====================================================================================================`));
-                promptUser();
-            })
-        });
-    });
-};
+      });
+    };
 
 // Update employee manager
 const updateEmployeeManager = () => {
@@ -414,7 +384,7 @@ const updateEmployeeManager = () => {
                     managerId = employee.id;
                 }
             });
-            
+
             let sql = `UPDATE employee SET employee.manager_id = ? WHERE employee.id = ?`;
 
             connection.query(sql, [managerId, employeeId], (error) => {
@@ -507,7 +477,7 @@ const removeRole = () => {
 
 // DELETE department
 const removeDepartment = () => {
-    let sql = `SELECT department.id, department.department_name FROM department`;
+    let sql = `SELECT department.id, department_name FROM department`;
     connection.query(sql, (error, response) => {
         if(error) throw error;
         let departmentNamesArray = [];
@@ -517,7 +487,8 @@ const removeDepartment = () => {
         inquirer.prompt([
             {
                 name: "selectedDept",
-                type: "What department do you wish to remove?",
+                type: "list",
+                message: "What department do you wish to remove?",
                 choices: departmentNamesArray
             }
         ])
